@@ -11,4 +11,6 @@ config_vars:
   MAVEN_OPTS: -Xmx384m -Xss512k -XX:+UseCompressedOops 
 addons:
   heroku-postgresql:dev
+default_process_types:
+  test: .maven/bin/mvn clean test
 EOF
