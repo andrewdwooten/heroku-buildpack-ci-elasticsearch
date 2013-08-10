@@ -2,7 +2,7 @@
 set -x
 buildpack_dir=$(cd $(dirname $0); pwd)
 
-magic_curl_url="https://github.com/ryanbrainard/magic-curl/archive/master.tar.gz"
+magic_curl_url="https://github.com/ryanbrainard/magic-curl/archive/v0.2.tar.gz"
 magic_curl_home="$buildpack_dir/opt/magic_curl"
 export MAGIC_CURL_CACHE="$magic_curl_home/cache"
 
