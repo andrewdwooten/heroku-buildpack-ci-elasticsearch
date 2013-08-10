@@ -1,8 +1,6 @@
 #! /usr/bin/env bash
 set -x
-pushd $(dirname $0) > /dev/null
-buildpack_dir=$(pwd)
-popd > /dev/null
+buildpack_dir=$(cd $(dirname $0); pwd)
 
 magic_curl_url="https://github.com/ryanbrainard/magic-curl/archive/master.tar.gz"
 magic_curl_home="$buildpack_dir/opt/magic_curl"
@@ -25,9 +23,7 @@ prefetch "https://heroku-jdk.s3.amazonaws.com/openjdk1.7.0_21.tar.gz"
 mv $buildpack_dir/bin/compile $buildpack_dir/bin/compile0
 cat > $buildpack_dir/bin/compile <<EOF
 #! /usr/bin/env sh
-pushd \$(dirname \$0) > /dev/null
-buildpack_dir=\$(pwd)
-popd > /dev/null
+buildpack_dir=\$(cd \$(dirname \$0)/..; pwd)
 export MAGIC_CURL_CACHE="\$buildpack_dir/opt/magic_curl/cache"
 export PATH=\$buildpack_dir/opt/magic_curl/bin:\$PATH
 exec bin/compile0
