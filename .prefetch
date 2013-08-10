@@ -30,6 +30,6 @@ buildpack_dir=\$(pwd)
 popd > /dev/null
 export MAGIC_CURL_CACHE="\$buildpack_dir/opt/magic_curl/cache"
 export PATH=\$buildpack_dir/opt/magic_curl/bin:\$PATH
-exec bin/compile
+exec bin/compile0
 EOF
 chmod +x $buildpack_dir/bin/compile
