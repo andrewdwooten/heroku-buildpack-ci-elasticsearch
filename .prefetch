@@ -26,6 +26,6 @@ cat > $buildpack_dir/bin/compile <<EOF
 buildpack_dir=\$(cd \$(dirname \$0)/..; pwd)
 export MAGIC_CURL_CACHE="\$buildpack_dir/opt/magic_curl/cache"
 export PATH=\$buildpack_dir/opt/magic_curl/bin:\$PATH
-exec bin/compile0
+exec \$buildpack_dir/bin/compile0 \$@
 EOF
 chmod +x $buildpack_dir/bin/compile
