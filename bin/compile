@@ -12,7 +12,7 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 LOGGER_FLAGS=""
 
-curl --silent --location http://heroku-jvm-common.s3.amazonaws.com/jvm-buildpack-common.tar.gz | tar xz
+time curl --silent --location http://heroku-jvm-common.s3.amazonaws.com/jvm-buildpack-common.tar.gz | tar xz
 . bin/java
 
 KEEP_M2_CACHE="true"
@@ -38,7 +38,7 @@ fi
 # install JDK 
 javaVersion=$(detect_java_version ${BUILD_DIR})
 echo -n "-----> Installing OpenJDK ${javaVersion}..."
-install_java ${BUILD_DIR} ${javaVersion}
+time install_java ${BUILD_DIR} ${javaVersion}
 jdk_overlay ${BUILD_DIR}
 echo " done"
 
