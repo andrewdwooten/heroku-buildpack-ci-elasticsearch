@@ -111,3 +111,17 @@ echo 'export PATH="/app/.jdk/bin:$PATH"' >> $PROFILE_PATH
 echo 'export JAVA_TOOL_OPTIONS="$JAVA_TOOL_OPTIONS -Djava.rmi.server.useCodebaseOnly=true"' >> $PROFILE_PATH
 
 logger -p user.notice -t "slugc[$$]" "language_pack_java java_compile_end $LOGGER_FLAGS"
+
+mkdir -p $BUILD_DIR/.startup
+cat << EOF > $BUILD_DIR/.startup/java_with_jstack
+  javacmd="java \$@"
+  eval "\$javacmd &"
+  pid=\$!
+
+  while :
+  do
+    sleep 180
+    kill -3 \$pid
+  done
+EOF
+chmod +x $BUILD_DIR/.startup/java_with_jstack
