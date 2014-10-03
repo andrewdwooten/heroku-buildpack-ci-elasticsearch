@@ -129,7 +129,9 @@ cat << EOF > $BUILD_DIR/.startup/java_with_jstack
 
   while :
   do
-    if [ "$JSTACK_INTERVAL" = "0" ]; then
+    if [ -z "$JSTACK_INTERVAL" ]; then
+      sleep 30
+    elif [ "$JSTACK_INTERVAL" = "0" ]; then
       sleep 30
     else
       sleep "${JSTACK_INTERVAL}"
