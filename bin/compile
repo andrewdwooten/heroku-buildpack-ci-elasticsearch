@@ -45,9 +45,9 @@ if [ ! -f ${BUILD_DIR}/system.properties ]; then
     cp ${CACHE_DIR}/system.properties ${BUILD_DIR}/system.properties
   else
     if [ -d ${CACHE_DIR}/.m2 ]; then
-      defaultJdkVersion="1.7"
-    else
       defaultJdkVersion="1.6"
+    else
+      defaultJdkVersion="1.7"
     fi
     cat > ${BUILD_DIR}/system.properties <<EOF
 java.runtime.version=${defaultJdkVersion}
