@@ -41,9 +41,18 @@ mkdir -p $CACHE_DIR
 
 # create default system.properties
 if [ ! -f ${BUILD_DIR}/system.properties ]; then
-  cat > ${BUILD_DIR}/system.properties <<EOF
-java.runtime.version=1.7
+  if [ -f ${CACHE_DIR}/system.properties ]; then
+    cp ${CACHE_DIR}/system.properties ${BUILD_DIR}/system.properties
+  else
+    if [ -d ${CACHE_DIR}/.m2 ]; then
+      defaultJdkVersion="1.7"
+    else
+      defaultJdkVersion="1.6"
+    fi
+    cat > ${BUILD_DIR}/system.properties <<EOF
+java.runtime.version=${defaultJdkVersion}
 EOF
+  fi
 fi
 
 # install JDK
@@ -98,6 +107,9 @@ if [ "true" == $KEEP_M2_CACHE ]; then
     cp -r $CACHE_DIR/$DIR $DIR
   done
 fi
+
+#cache the system.properties
+cp ${BUILD_DIR}/system.properties ${CACHE_DIR}/system.properties
 
 PROFILE_PATH="$BUILD_DIR/.profile.d/java.sh"
 mkdir -p $(dirname $PROFILE_PATH)
