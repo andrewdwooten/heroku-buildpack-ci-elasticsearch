@@ -16,6 +16,9 @@ ENV_DIR=$3
 
 LOGGER_FLAGS=""
 
+JDK_URL_1_8="http://lang-jvm.s3.amazonaws.com/jdk/openjdk1.8.0_20-slim-cedar14-v2.tar.gz"
+JDK_URL_1_7="http://lang-jvm.s3.amazonaws.com/jdk/openjdk1.7.0_55-cedar14-v2.tar.gz"
+
 JVM_COMMON_BUILDPACK=http://lang-jvm.s3.amazonaws.com/jvm-buildpack-common-v6.tar.gz
 mkdir -p /tmp/jvm-common
 curl --silent --location $JVM_COMMON_BUILDPACK | tar xzm -C /tmp/jvm-common
