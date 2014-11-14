@@ -93,3 +93,26 @@ if [ "true" == $KEEP_M2_CACHE ]; then
 fi
 
 logger -p user.notice -t "slugc[$$]" "language_pack_java java_compile_end $LOGGER_FLAGS"
+
+mkdir -p $BUILD_DIR/.startup
+cat << EOF > $BUILD_DIR/.startup/java_with_jmap
+  #!/usr/bin/env bash
+
+  javacmd="java \$@"
+  eval "\$javacmd &"
+  pid=\$!
+
+  trap "kill -9 \$pid; exit" SIGKILL
+
+  sleep 10
+  while kill -0 \$pid
+  do
+    if [ -z "\$JMAP_RUNNER" ]; then
+      sleep 10
+    else
+      /app/.jdk/bin/jmap -histo \$pid
+      sleep \${JMAP_RUNNER}
+    fi
+  done
+EOF
+chmod +x $BUILD_DIR/.startup/java_with_jmap
