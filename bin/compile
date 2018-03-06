@@ -49,6 +49,7 @@ fi
 
 set-env PATH '/app/.heroku/vendor/elasticsearch/bin:$PATH'
 set-env ELASTICSEARCH_URL 'localhost:9200'
+echo "source $BUILD_DIR/.profile.d/jvmcommon.sh" >> $PROFILE_PATH
 echo "elasticsearch &" >> $PROFILE_PATH
 
 echo "Done" | indent
