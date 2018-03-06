@@ -12,19 +12,51 @@ CACHE_DIR=$2
 ENV_DIR=$3
 
 source $BP_DIR/lib/common.sh
-source $BP_DIR/lib/maven.sh
 source <(curl -s --retry 3 -L $BUILDPACK_STDLIB_URL)
 
 export_env $ENV_DIR "." "JAVA_OPTS|JAVA_TOOL_OPTIONS"
 
 install_jdk ${BUILD_DIR}
 
-[ -n "$(find ${BUILD_DIR} -type f -name "*.kt")" ] && mcount "kotlin.source"
-[ -n "$(find ${BUILD_DIR} -type f -name "*.groovy")" ] && mcount "groovy.source"
+indent() {
+  sed -u 's/^/       /'
+}
 
-run_mvn "compile" $BUILD_DIR $CACHE_DIR
+# Usage: $ set-env key value
+set-env() {
+  echo "export $1=$2" >> $PROFILE_PATH
+}
 
-if has_maven_wrapper $BUILD_DIR; then
-  cache_copy ".m2/wrapper" $BUILD_DIR $CACHE_DIR
-  rm -rf $BUILD_DIR/.m2
+mktmpdir() {
+  dir=$(mktemp -t fakesu-$1-XXXX)
+  rm -rf $dir
+  mkdir -p $dir
+  echo $dir
+}
+
+VERSION="2.3.3"
+ELASTICSEARCH_BUILD="$(mktmpdir elasticsearch)"
+INSTALL_DIR="$BUILD_DIR/.heroku/vendor/elasticsearch"
+PROFILE_PATH="$BUILD_DIR/.profile.d/elasticsearch.sh"
+
+mkdir -p $INSTALL_DIR
+mkdir -p $(dirname $PROFILE_PATH)
+mkdir -p $CACHE_DIR
+
+if [ ! -d $CACHE_DIR/elasticsearch_$VERSION ]; then
+	echo "Fetching and installing elasticsearch" | indent
+	cd $ELASTICSEARCH_BUILD
+	curl -OL "https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/$VERSION/elasticsearch-$VERSION.tar.gz"
+	tar zxvf "elasticsearch-$VERSION.tar.gz"
+	cd "elasticsearch-$VERSION"
+	cp -r $CACHE_DIR/elasticsearch-$VERSION/* $INSTALL_DIR/
+else
+	echo "Installing elasticsearch from cache" | indent
+	cp -r $CACHE_DIR/elasticsearch-$VERSION/*  $INSTALL_DIR/
 fi
+
+set-env PATH '/app/.heroku/vendor/elasticsearch/bin:$PATH'
+# set-env ELASTICSEARCH_URL "elasticsearch://h:$PASSWORD@localhost:6379/"
+echo "elasticsearch &> /dev/null &" >> $PROFILE_PATH
+
+echo "Done" | indent
