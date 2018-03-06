@@ -27,15 +27,7 @@ set-env() {
   echo "export $1=$2" >> $PROFILE_PATH
 }
 
-mktmpdir() {
-  dir=$(mktemp -t fakesu-$1-XXXX)
-  rm -rf $dir
-  mkdir -p $dir
-  echo $dir
-}
-
 VERSION="2.3.3"
-ELASTICSEARCH_BUILD="$(mktmpdir elasticsearch)"
 INSTALL_DIR="$BUILD_DIR/.heroku/vendor/elasticsearch"
 PROFILE_PATH="$BUILD_DIR/.profile.d/elasticsearch.sh"
 
@@ -45,7 +37,7 @@ mkdir -p $CACHE_DIR
 
 if [ ! -d $CACHE_DIR/elasticsearch_$VERSION ]; then
 	echo "Fetching and installing elasticsearch" | indent
-	cd $ELASTICSEARCH_BUILD
+	cd $CACHE_DIR
 	curl -OL "https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/$VERSION/elasticsearch-$VERSION.tar.gz"
 	tar zxvf "elasticsearch-$VERSION.tar.gz"
 	cd "elasticsearch-$VERSION"
