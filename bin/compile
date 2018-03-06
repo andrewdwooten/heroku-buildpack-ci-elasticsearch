@@ -48,7 +48,7 @@ else
 fi
 
 set-env PATH '/app/.heroku/vendor/elasticsearch/bin:$PATH'
-# set-env ELASTICSEARCH_URL "elasticsearch://h:$PASSWORD@localhost:6379/"
+set-env ELASTICSEARCH_URL 'localhost:9200'
 echo "elasticsearch &> /dev/null &" >> $PROFILE_PATH
 
 echo "Done" | indent
