@@ -39,7 +39,7 @@ if [ ! -d $CACHE_DIR/elasticsearch_$VERSION ]; then
 	echo "Fetching and installing elasticsearch" | indent
 	cd $CACHE_DIR
 	curl -OL "https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/$VERSION/elasticsearch-$VERSION.tar.gz"
-	tar zxvf "elasticsearch-$VERSION.tar.gz"
+	tar zxf "elasticsearch-$VERSION.tar.gz"
 	cd "elasticsearch-$VERSION"
 	cp -r $CACHE_DIR/elasticsearch-$VERSION/* $INSTALL_DIR/
 else
@@ -49,6 +49,6 @@ fi
 
 set-env PATH '/app/.heroku/vendor/elasticsearch/bin:$PATH'
 set-env ELASTICSEARCH_URL 'localhost:9200'
-echo "elasticsearch &> /dev/null &" >> $PROFILE_PATH
+echo "elasticsearch &" >> $PROFILE_PATH
 
 echo "Done" | indent
