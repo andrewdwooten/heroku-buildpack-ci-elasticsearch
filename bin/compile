@@ -22,11 +22,6 @@ indent() {
   sed -u 's/^/       /'
 }
 
-# Usage: $ set-env key value
-set-env() {
-  echo "export $1=$2" >> $PROFILE_PATH
-}
-
 VERSION="2.3.3"
 INSTALL_DIR="$BUILD_DIR/.heroku/vendor/elasticsearch"
 PROFILE_PATH="$BUILD_DIR/.profile.d/elasticsearch.sh"
@@ -47,9 +42,16 @@ else
 	cp -r $CACHE_DIR/elasticsearch-$VERSION/*  $INSTALL_DIR/
 fi
 
-set-env PATH '/app/.heroku/vendor/elasticsearch/bin:$PATH'
-set-env ELASTICSEARCH_URL 'localhost:9200'
-echo "source $BUILD_DIR/.profile.d/jvmcommon.sh" >> $PROFILE_PATH
-echo "elasticsearch &> /dev/null &" >> $PROFILE_PATH
+cat <<EOF >> $PROFILE_PATH
+export PATH=/app/.heroku/vendor/elasticsearch/bin:\$PATH
+export ELASTICSEARCH_URL=localhost:9200
+
+source $BUILD_DIR/.profile.d/jvmcommon.sh
+
+if [ ! -f /tmp/es.pid ]; then
+  echo "Starting ElasticSearch..."
+  elasticsearch -d -p /tmp/es.pid
+fi
+EOF
 
 echo "Done" | indent
