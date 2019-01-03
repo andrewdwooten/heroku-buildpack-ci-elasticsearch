@@ -47,7 +47,6 @@ fi
 cat <<EOF >> $PROFILE_PATH
 export PATH=/app/.heroku/vendor/elasticsearch/bin:\$PATH
 export ELASTICSEARCH_URL=localhost:9200
-export JAVA_OPTS="-Xms1g -Xmx2g -Dfile.encoding=UTF-8"
 
 source $BUILD_DIR/.profile.d/jvmcommon.sh
 
