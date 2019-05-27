@@ -13,7 +13,7 @@ describe "Java" do
     init_app(app)
   end
 
-  ["1.7", "1.8", "1.7.0_161", "1.8.0_144"].each do |version|
+  ["1.7", "1.8", "11"].each do |version|
     context "on jdk-#{version}" do
       let(:app) { Hatchet::Runner.new("java-servlets-sample") }
       let(:jdk_version) { version }
@@ -31,7 +31,7 @@ describe "Java" do
 
           expect(successful_body(app)).to eq("Hello from Java!")
 
-          expect(app.run("env")).
+          expect(app.run("env", nil, { :heroku => { "exit-code" => Hatchet::App::SkipDefaultOption }})). # work around a CLI bug that doesn't allow --exit-code when invoking a process type via "heroku run"
               to include(%q{DATABASE_URL})
         end
       end
@@ -50,7 +50,7 @@ describe "Java" do
   end
 
   context "korvan" do
-    ["1.7", "1.8", "1.7.0_161", "1.8.0_152", "9", "9.0.1"].each do |version|
+    ["1.8", "9", "10", "11"].each do |version|
       let(:app) { Hatchet::Runner.new("korvan") }
       context "on jdk-#{version}" do
         let(:jdk_version) { version }
@@ -60,31 +60,33 @@ describe "Java" do
 
             expect(successful_body(app)).to eq("/1")
 
-            expect(app.run("echo \$JAVA_OPTS")).
+            expect(app.run('echo \$JAVA_OPTS')).
                 to include(%q{-Xmx300m -Xss512k})
 
             sleep 1
-            expect(app.run("env")).
+            expect(app.run("env", nil, { :heroku => { "exit-code" => Hatchet::App::SkipDefaultOption }})). # work around a CLI bug that doesn't allow --exit-code when invoking a process type via "heroku run"
                not_to include(%q{DATABASE_URL})
 
             sleep 1 # make sure the dynos don't overlap
-            expect(app.run("jce")).
+            expect(app.run("jce", nil, { :heroku => { "exit-code" => Hatchet::App::SkipDefaultOption }})). # work around a CLI bug that doesn't allow --exit-code when invoking a process type via "heroku run"
                 to include(%q{Encrypting, "Test"}).
                 and include(%q{Decrypted: Test})
 
             sleep 1 # make sure the dynos don't overlap
-            expect(app.run("netpatch")).
+            expect(app.run("netpatch", nil, { :heroku => { "exit-code" => Hatchet::App::SkipDefaultOption }})). # work around a CLI bug that doesn't allow --exit-code when invoking a process type via "heroku run"
                 to include(%q{name:eth0 (eth0)}).
                 and include(%q{name:lo (lo)})
 
             sleep 1 # make sure the dynos don't overlap
-            expect(app.run("https")).
+            expect(app.run("https", nil, { :heroku => { "exit-code" => Hatchet::App::SkipDefaultOption }})). # work around a CLI bug that doesn't allow --exit-code when invoking a process type via "heroku run"
                 to include("Successfully invoked HTTPS service.").
-                and match(%r{"X-Forwarded-Proto(col)?": "https"})
+                and match(%r{"X-Forwarded-Proto(col)?":\s?"https"})
 
-            if !jdk_version.match(/^9/)
+            # JDK 9, 10, and 11 do not have the jre/lib/ext dir where we drop
+            # the pgconfig.jar
+            if !jdk_version.match(/^9/) and !jdk_version.match(/^10/) and !jdk_version.match(/^11/)
               sleep 1 # make sure the dynos don't overlap
-              expect(app.run("pgssl")).
+              expect(app.run("pgssl", nil, { :heroku => { "exit-code" => Hatchet::App::SkipDefaultOption }})). # work around a CLI bug that doesn't allow --exit-code when invoking a process type via "heroku run"
                   to include("sslmode: require")
             end
           end
@@ -93,7 +95,7 @@ describe "Java" do
     end
   end
 
-  %w{1.7 1.8 1.7.0_161 1.8.0_144}.each do |version|
+  %w{1.7 1.8}.each do |version|
     context "#{version} with webapp-runner" do
       let(:app) { Hatchet::Runner.new("webapp-runner-sample") }
       let(:jdk_version) { version }
@@ -118,6 +120,20 @@ describe "Java" do
 
             expect(successful_body(app)).to eq("Hello from Java!")
           end
+        end
+      end
+    end
+  end
+
+  %w{1.8 10}.each do |version|
+    context "#{version} libpng test" do
+      let(:app) { Hatchet::Runner.new("libpng-test") }
+      let(:jdk_version) { version }
+
+      it "returns a successful response", :retry => 3, :retry_wait => 5 do
+        app.deploy do |app|
+          expect_successful_maven(jdk_version)
+          expect(successful_body(app)).to eq("All Good!!!")
         end
       end
     end

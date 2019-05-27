@@ -1,5 +1,4 @@
 Heroku buildpack for running Elasticsearch inside a dyno
-=========================
 
 This is a fork of the official Heroku buildpack for Java.
 

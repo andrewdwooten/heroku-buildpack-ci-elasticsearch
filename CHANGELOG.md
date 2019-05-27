@@ -1,5 +1,18 @@
 # Java Buildpack Changelog
 
+## master
+
++ Cache system.properties file
+
+## 63
+
++ Add support for MAVEN_HEROKU_CI_GOAL
+
+## 62
+
++ Improved error behavior for MAVEN_SETTINGS_URL
++ Changed location of JVM common buildpack
+
 ## v59
 
 + Add support for settings.xml in bin/test
