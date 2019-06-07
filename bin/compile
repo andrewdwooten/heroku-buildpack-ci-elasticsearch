@@ -14,7 +14,7 @@ ENV_DIR=$3
 source $BP_DIR/lib/common.sh
 source <(curl -s --retry 3 -L $BUILDPACK_STDLIB_URL)
 
-export_env $ENV_DIR "." "JAVA_OPTS|JAVA_TOOL_OPTIONS"
+export_env $ENV_DIR "." "ES_JAVA_OPTS"
 
 install_jdk "${BUILD_DIR}" "${CACHE_DIR}"
 
